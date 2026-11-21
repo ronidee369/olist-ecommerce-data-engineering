@@ -1,0 +1,38 @@
+
+services:
+  airflow:
+    image: olist-airflow:3.4.0-dbt
+    build: .
+    container_name: olist-airflow
+    command: standalone
+    restart: unless-stopped
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      AIRFLOW_HOME: /opt/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      DBT_PROFILES_DIR: /home/airflow/.dbt
+      GOOGLE_APPLICATION_CREDENTIALS: /home/airflow/gcloud/application_default_credentials.json
+
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - airflow_data:/opt/airflow
+
+      # dbt project
+      - ../olist_dbt:/opt/dbt/olist_dbt
+
+      # dbt profile
+      - ${DBT_PROFILES_HOST_PATH:?Set DBT_PROFILES_HOST_PATH in .env}:/home/airflow/.dbt/profiles.yml:ro
+
+      # Google Cloud credentials
+      - ${GOOGLE_CREDENTIALS_HOST_PATH:?Set GOOGLE_CREDENTIALS_HOST_PATH in .env}:/home/airflow/gcloud/application_default_credentials.json:ro
+
+    mem_limit: 2g
+    cpus: 2.0
+
+volumes:
+  airflow_data:

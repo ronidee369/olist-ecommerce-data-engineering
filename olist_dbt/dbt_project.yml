@@ -1,0 +1,31 @@
+
+# Olist E-Commerce Data Engineering Project
+
+name: 'olist_dbt'
+version: '1.0.0'
+profile: 'olist_dbt'
+
+# Project directories
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Model materialization configuration
+models:
+  olist_dbt:
+
+    staging:
+      +materialized: view
+
+    intermediate:
+      +materialized: view
+
+    marts:
+      +materialized: table
